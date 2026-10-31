@@ -2267,8 +2267,12 @@ h1.title {font-size:32px;font-weight:750;color:#0d1c3c;margin-bottom:12px;}
 .breakdown {font-size:13px;line-height:1.9;margin-top:8px;}
 .plot-area {min-width:0;}
 .plot-area .html-widget {max-width:100%;}
+.scenario-section {margin-top:65px;border-top:1px solid #d4dfeb;padding-top:28px;}
+.scenario-layout {display:grid;grid-template-columns:minmax(210px,250px) minmax(0,1fr);gap:18px;align-items:start;}
+.scenario-controls {background:#f6f9fc;border:1px solid #d4dfeb;border-radius:10px;padding:16px;}
+.scenario-plot {height:620px;width:100%;min-width:0;}
 .note {font-size:13px;color:#516477;margin-top:5px;}
-@media(max-width:800px){.pricing-layout{grid-template-columns:1fr;}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:800px){.pricing-layout,.scenario-layout{grid-template-columns:1fr;}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}}
 @media(max-width:480px){.controls{grid-template-columns:1fr;}}
 </style>
 <div class="pricing-layout">
@@ -2297,8 +2301,8 @@ Minimum Yield: <span id="minimum-value">—</span>
 </div>
 </div>
 <div class="plot-area">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-4f39238254bacda2357f" style="width:960px;height:604.8px;"></div>
-<script type="application/json" data-for="htmlwidget-4f39238254bacda2357f">{"x":{"visdat":{"9124140af45":["function () ","plotlyVisDat"]},"cur_data":"9124140af45","attrs":{"9124140af45":{"x":[1,2],"y":[1,2],"z":[1,2],"mode":"markers","marker":{"size":1,"opacity":0},"showlegend":false,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"margin":{"b":0,"l":0,"t":0,"r":0},"scene":{"xaxis":{"title":[]},"yaxis":{"title":[]},"zaxis":{"title":[]}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[1,2],"y":[1,2],"z":[1,2],"mode":"markers","marker":{"color":"rgba(31,119,180,1)","size":1,"opacity":0,"line":{"color":"rgba(31,119,180,1)"}},"showlegend":false,"type":"scatter3d","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-1e7787b0221332c4da96" style="width:960px;height:604.8px;"></div>
+<script type="application/json" data-for="htmlwidget-1e7787b0221332c4da96">{"x":{"visdat":{"39587ca3638f":["function () ","plotlyVisDat"]},"cur_data":"39587ca3638f","attrs":{"39587ca3638f":{"x":[1,2],"y":[1,2],"z":[1,2],"mode":"markers","marker":{"size":1,"opacity":0},"showlegend":false,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"margin":{"b":0,"l":0,"t":0,"r":0},"scene":{"xaxis":{"title":[]},"yaxis":{"title":[]},"zaxis":{"title":[]}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[1,2],"y":[1,2],"z":[1,2],"mode":"markers","marker":{"color":"rgba(31,119,180,1)","size":1,"opacity":0,"line":{"color":"rgba(31,119,180,1)"}},"showlegend":false,"type":"scatter3d","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <div class="note">
 Drag to rotate, scroll to zoom. The orange cell marks the selected
 combination. Green is the Risk Adjusted Yield and red is the minimum
@@ -2307,12 +2311,33 @@ markers.
 </div>
 </div>
 </div>
+<section class="scenario-section">
+<h2>
+All Pricing Scenarios
+</h2>
+<p>
+60 combinations of Segment, Borrower, and Structure Risk. Hover over a
+point to see its Risk-Adjusted Yield. The selected deal from above plot
+is outlined in orange.
+</p>
+<div class="scenario-layout">
+<div class="scenario-controls">
+<label class="control">Base
+<select id="scenario-base-select"></select></label>
+</div>
+<div id="scenario-plot" class="scenario-plot">
+
+</div>
+</div>
+</section>
 <script type="application/json" id="pricing-model">{"base":{"Prime":0.08,"SOFR":0.08,"Fixed > 2Y":0.0825},"segment":{"Tier 1":-0.0075,"Tier 2":-0.0025,"Tier 3":0,"Tier 4":0.005,"Tier 5":0.01},"borrower":{"Tier A":-0.01,"Tier B":0,"Tier C":0.0075},"structure":{"Low":-0.0075,"Moderate":-0.005,"Medium":0,"High":0.0075}}</script>
-<script type="application/json" id="pricing-defaults">{"base":"Fixed > 2Y","segment":"Tier 2","borrower":"Tier C","structure":"Moderate"}</script>
+<script type="application/json" id="pricing-defaults">{"base":"Fixed > 2Y","segment":"Tier 4","borrower":"Tier B","structure":"Low"}</script>
+<script type="application/json" id="pricing-scenarios">[{"segment":"Tier 1","borrower":"Tier A","structure":"Low","yield":0.0575},{"segment":"Tier 1","borrower":"Tier A","structure":"Moderate","yield":0.06},{"segment":"Tier 1","borrower":"Tier A","structure":"Medium","yield":0.065},{"segment":"Tier 1","borrower":"Tier A","structure":"High","yield":0.0725},{"segment":"Tier 1","borrower":"Tier B","structure":"Low","yield":0.0675},{"segment":"Tier 1","borrower":"Tier B","structure":"Moderate","yield":0.07},{"segment":"Tier 1","borrower":"Tier B","structure":"Medium","yield":0.075},{"segment":"Tier 1","borrower":"Tier B","structure":"High","yield":0.0825},{"segment":"Tier 1","borrower":"Tier C","structure":"Low","yield":0.075},{"segment":"Tier 1","borrower":"Tier C","structure":"Moderate","yield":0.0775},{"segment":"Tier 1","borrower":"Tier C","structure":"Medium","yield":0.0825},{"segment":"Tier 1","borrower":"Tier C","structure":"High","yield":0.09},{"segment":"Tier 2","borrower":"Tier A","structure":"Low","yield":0.0625},{"segment":"Tier 2","borrower":"Tier A","structure":"Moderate","yield":0.065},{"segment":"Tier 2","borrower":"Tier A","structure":"Medium","yield":0.07},{"segment":"Tier 2","borrower":"Tier A","structure":"High","yield":0.0775},{"segment":"Tier 2","borrower":"Tier B","structure":"Low","yield":0.0725},{"segment":"Tier 2","borrower":"Tier B","structure":"Moderate","yield":0.075},{"segment":"Tier 2","borrower":"Tier B","structure":"Medium","yield":0.08},{"segment":"Tier 2","borrower":"Tier B","structure":"High","yield":0.0875},{"segment":"Tier 2","borrower":"Tier C","structure":"Low","yield":0.08},{"segment":"Tier 2","borrower":"Tier C","structure":"Moderate","yield":0.0825},{"segment":"Tier 2","borrower":"Tier C","structure":"Medium","yield":0.0875},{"segment":"Tier 2","borrower":"Tier C","structure":"High","yield":0.095},{"segment":"Tier 3","borrower":"Tier A","structure":"Low","yield":0.065},{"segment":"Tier 3","borrower":"Tier A","structure":"Moderate","yield":0.0675},{"segment":"Tier 3","borrower":"Tier A","structure":"Medium","yield":0.0725},{"segment":"Tier 3","borrower":"Tier A","structure":"High","yield":0.08},{"segment":"Tier 3","borrower":"Tier B","structure":"Low","yield":0.075},{"segment":"Tier 3","borrower":"Tier B","structure":"Moderate","yield":0.0775},{"segment":"Tier 3","borrower":"Tier B","structure":"Medium","yield":0.0825},{"segment":"Tier 3","borrower":"Tier B","structure":"High","yield":0.09},{"segment":"Tier 3","borrower":"Tier C","structure":"Low","yield":0.0825},{"segment":"Tier 3","borrower":"Tier C","structure":"Moderate","yield":0.085},{"segment":"Tier 3","borrower":"Tier C","structure":"Medium","yield":0.09},{"segment":"Tier 3","borrower":"Tier C","structure":"High","yield":0.0975},{"segment":"Tier 4","borrower":"Tier A","structure":"Low","yield":0.07},{"segment":"Tier 4","borrower":"Tier A","structure":"Moderate","yield":0.0725},{"segment":"Tier 4","borrower":"Tier A","structure":"Medium","yield":0.0775},{"segment":"Tier 4","borrower":"Tier A","structure":"High","yield":0.085},{"segment":"Tier 4","borrower":"Tier B","structure":"Low","yield":0.08},{"segment":"Tier 4","borrower":"Tier B","structure":"Moderate","yield":0.0825},{"segment":"Tier 4","borrower":"Tier B","structure":"Medium","yield":0.0875},{"segment":"Tier 4","borrower":"Tier B","structure":"High","yield":0.095},{"segment":"Tier 4","borrower":"Tier C","structure":"Low","yield":0.0875},{"segment":"Tier 4","borrower":"Tier C","structure":"Moderate","yield":0.09},{"segment":"Tier 4","borrower":"Tier C","structure":"Medium","yield":0.095},{"segment":"Tier 4","borrower":"Tier C","structure":"High","yield":0.1025},{"segment":"Tier 5","borrower":"Tier A","structure":"Low","yield":0.075},{"segment":"Tier 5","borrower":"Tier A","structure":"Moderate","yield":0.0775},{"segment":"Tier 5","borrower":"Tier A","structure":"Medium","yield":0.0825},{"segment":"Tier 5","borrower":"Tier A","structure":"High","yield":0.09},{"segment":"Tier 5","borrower":"Tier B","structure":"Low","yield":0.085},{"segment":"Tier 5","borrower":"Tier B","structure":"Moderate","yield":0.0875},{"segment":"Tier 5","borrower":"Tier B","structure":"Medium","yield":0.0925},{"segment":"Tier 5","borrower":"Tier B","structure":"High","yield":0.1},{"segment":"Tier 5","borrower":"Tier C","structure":"Low","yield":0.0925},{"segment":"Tier 5","borrower":"Tier C","structure":"Moderate","yield":0.095},{"segment":"Tier 5","borrower":"Tier C","structure":"Medium","yield":0.1},{"segment":"Tier 5","borrower":"Tier C","structure":"High","yield":0.1075}]</script>
 <script>
 window.addEventListener('load', function () {
   const model = JSON.parse(document.getElementById('pricing-model').textContent);
   const defaults = JSON.parse(document.getElementById('pricing-defaults').textContent);
+  const scenarios = JSON.parse(document.getElementById('pricing-scenarios').textContent);
   const keys = ['base','segment','borrower','structure'];
   const selects = {};
   keys.forEach(k => {
@@ -2324,6 +2349,10 @@ window.addEventListener('load', function () {
     if(el.selectedIndex<0) el.selectedIndex=0;
     el.addEventListener('change',update);
   });
+  const scenarioBaseSelect=document.getElementById('scenario-base-select');
+  Object.keys(model.base).forEach(name=>{const opt=document.createElement('option');opt.value=name;opt.textContent=name;scenarioBaseSelect.appendChild(opt);});
+  scenarioBaseSelect.value=defaults.base.trim();
+  scenarioBaseSelect.addEventListener('change',()=>updateScenarios(Object.fromEntries(keys.map(k=>[k,selects[k].value]))));
   const gd=document.querySelector('.plot-area .js-plotly-plot');
   if(!gd || !window.Plotly){document.getElementById('yield-value').textContent='Plot unavailable';return;}
   const coords={segment:Object.keys(model.segment),borrower:Object.keys(model.borrower),structure:Object.keys(model.structure)};
@@ -2391,6 +2420,23 @@ window.addEventListener('load', function () {
     traces.forEach(t => {const temp=t.y; t.y=t.z; t.z=temp;});
     layout.scene.camera={eye:{x:1.65,y:-1.75,z:1.15},up:{x:0,y:0,z:1}};
     Plotly.react(gd,traces,layout,{responsive:true,displaylogo:false});
+    updateScenarios(chosen);
+  }
+  function updateScenarios(chosen){
+    const baseline=model.base['Fixed > 2Y'];
+    const scenarioBase=scenarioBaseSelect.value;
+    const baseShift=model.base[scenarioBase]-baseline;
+    const xs=scenarios.map(r=>coords.borrower.indexOf(r.borrower)+1);
+    const ys=scenarios.map(r=>coords.structure.indexOf(r.structure)+1);
+    const zs=scenarios.map(r=>coords.segment.indexOf(r.segment)+1);
+    const yields=scenarios.map(r=>r.yield+baseShift);
+    const hover=scenarios.map((r,i)=>r.segment+' / '+r.borrower+' / '+r.structure+'<br>Risk-Adjusted Yield: '+pct(yields[i])+'<br>Base: '+scenarioBase);
+    const selectedIndex=scenarios.findIndex(r=>r.segment===chosen.segment&&r.borrower===chosen.borrower&&r.structure===chosen.structure);
+    const trace={type:'scatter3d',mode:'markers',x:xs,y:ys,z:zs,text:hover,hovertemplate:'%{text}<extra></extra>',marker:{size:7,color:yields.map(v=>v*100),colorscale:'Viridis',colorbar:{title:{text:'Target (%)',side:'top',font:{size:11}},thickness:11,len:0.55,x:0.98,xpad:0,ypad:0,tickfont:{size:10}},opacity:.95,line:{color:'#ffffff',width:1}},showlegend:false};
+    const data=[trace];
+    if(selectedIndex>=0)data.push({type:'scatter3d',mode:'markers',x:[xs[selectedIndex]],y:[ys[selectedIndex]],z:[zs[selectedIndex]],text:[hover[selectedIndex]],hovertemplate:'%{text}<extra>Selected deal</extra>',marker:{size:13,color:'#ff841e',symbol:'circle',line:{color:'#222222',width:3}},showlegend:false});
+    const axis=(title,values)=>({title:{text:'<b>'+title+'</b>',font:{size:14,color:'#000000'}},tickvals:values.map((_,i)=>i+1),ticktext:values,range:[.4,values.length+.6],zeroline:false,gridcolor:'#E5E5E5',tickfont:{color:'#000000'}});
+    Plotly.react('scenario-plot',data,{margin:{l:0,r:5,b:0,t:15},paper_bgcolor:'#fff',uirevision:'scenario-camera',scene:{aspectmode:'manual',aspectratio:{x:1.35,y:1,z:1.05},xaxis:axis('Pricing Level',coords.borrower),yaxis:axis('LGD / Structure Risk',coords.structure),zaxis:axis('Segment Risk',coords.segment),camera:{eye:{x:1.65,y:-1.75,z:1.15},up:{x:0,y:0,z:1}}}},{responsive:true,displaylogo:false});
   }
   update();
 });
