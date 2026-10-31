@@ -111,7 +111,7 @@ window.addEventListener('load', function () {
   const coords={segment:Object.keys(model.segment),borrower:Object.keys(model.borrower),structure:Object.keys(model.structure)};
   const pct=n=>(100*n).toFixed(2)+'%';
   const signed=n=>(n>=0?'+':'')+(100*n).toFixed(2)+'%';
-  function line(a,b,color='#8fa5ba',width=2){return {type:'scatter3d',mode:'lines',x:[a[0],b[0]],y:[a[1],b[1]],z:[a[2],b[2]],line:{color,width},hoverinfo:'skip',showlegend:false};}
+  function line(a,b,color='#D3D3D3',width=2){return {type:'scatter3d',mode:'lines',x:[a[0],b[0]],y:[a[1],b[1]],z:[a[2],b[2]],line:{color,width},hoverinfo:'skip',showlegend:false};}
   function mesh(vertices,color,opacity){
     return {type:'mesh3d',x:vertices.map(p=>p[0]),y:vertices.map(p=>p[1]),z:vertices.map(p=>p[2]),
       i:[0,0],j:[1,2],k:[2,3],color,opacity,flatshading:true,hoverinfo:'skip',showlegend:false};
@@ -164,9 +164,10 @@ window.addEventListener('load', function () {
       hoverinfo:'text',name:'Minimum Yield',showlegend:false});
     const layout={margin:{l:0,r:0,b:0,t:0},paper_bgcolor:'#fff',showlegend:false,uirevision:'keep-camera',
       scene:{aspectmode:'manual',aspectratio:{x:1.35,y:1,z:1.05},
-      xaxis:{title:'Pricing Level (Borrower)',range:[.4,3.6],tickvals:[1,2,3],ticktext:coords.borrower,zeroline:false},
-      yaxis:{title:'Structure Risk',range:[.4,4.6],tickvals:[1,2,3,4],ticktext:coords.structure,zeroline:false},
-      zaxis:{title:'Segment Risk',range:[.4,5.6],tickvals:[1,2,3,4,5],ticktext:coords.segment,zeroline:false}}};
+  xaxis:{title:{text:'<b>Pricing Level</b>',font:{size:14,color:'#000000'}},range:[.4,3.6],tickvals:[1,2,3],ticktext:coords.borrower,zeroline:false},
+  yaxis:{title:{text:'<b>LGD / Structure Risk</b>',font:{size:14,color:'#000000'}},range:[.4,4.6],tickvals:[1,2,3,4],ticktext:coords.structure,zeroline:false},
+  zaxis:{title:{text:'<b>Segment Risk</b>',font:{size:14,color:'#000000'}},range:[.4,5.6],tickvals:[1,2,3,4,5],ticktext:coords.segment,zeroline:false}
+}};
     // Plotly uses Z as the vertical screen axis. Swap the model's Y and Z
     // coordinates for display, keeping the Segment risk vertical.
     traces.forEach(t => {const temp=t.y; t.y=t.z; t.z=temp;});

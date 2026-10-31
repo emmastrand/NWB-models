@@ -2297,8 +2297,8 @@ Minimum Yield: <span id="minimum-value">—</span>
 </div>
 </div>
 <div class="plot-area">
-<div class="plotly html-widget html-fill-item" id="htmlwidget-b560a4e548e67b55500b" style="width:960px;height:604.8px;"></div>
-<script type="application/json" data-for="htmlwidget-b560a4e548e67b55500b">{"x":{"visdat":{"588461b355be":["function () ","plotlyVisDat"]},"cur_data":"588461b355be","attrs":{"588461b355be":{"x":[1,2],"y":[1,2],"z":[1,2],"mode":"markers","marker":{"size":1,"opacity":0},"showlegend":false,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"margin":{"b":0,"l":0,"t":0,"r":0},"scene":{"xaxis":{"title":[]},"yaxis":{"title":[]},"zaxis":{"title":[]}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[1,2],"y":[1,2],"z":[1,2],"mode":"markers","marker":{"color":"rgba(31,119,180,1)","size":1,"opacity":0,"line":{"color":"rgba(31,119,180,1)"}},"showlegend":false,"type":"scatter3d","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div class="plotly html-widget html-fill-item" id="htmlwidget-cb73d83cd2452e8a6750" style="width:960px;height:604.8px;"></div>
+<script type="application/json" data-for="htmlwidget-cb73d83cd2452e8a6750">{"x":{"visdat":{"9bac16646623":["function () ","plotlyVisDat"]},"cur_data":"9bac16646623","attrs":{"9bac16646623":{"x":[1,2],"y":[1,2],"z":[1,2],"mode":"markers","marker":{"size":1,"opacity":0},"showlegend":false,"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"margin":{"b":0,"l":0,"t":0,"r":0},"scene":{"xaxis":{"title":[]},"yaxis":{"title":[]},"zaxis":{"title":[]}},"hovermode":"closest","showlegend":false},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":[1,2],"y":[1,2],"z":[1,2],"mode":"markers","marker":{"color":"rgba(31,119,180,1)","size":1,"opacity":0,"line":{"color":"rgba(31,119,180,1)"}},"showlegend":false,"type":"scatter3d","error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <div class="note">
 Drag to rotate, scroll to zoom. The orange cell marks the selected
 combination. Green is the Risk Adjusted Yield and red is the minimum
@@ -2329,7 +2329,7 @@ window.addEventListener('load', function () {
   const coords={segment:Object.keys(model.segment),borrower:Object.keys(model.borrower),structure:Object.keys(model.structure)};
   const pct=n=>(100*n).toFixed(2)+'%';
   const signed=n=>(n>=0?'+':'')+(100*n).toFixed(2)+'%';
-  function line(a,b,color='#8fa5ba',width=2){return {type:'scatter3d',mode:'lines',x:[a[0],b[0]],y:[a[1],b[1]],z:[a[2],b[2]],line:{color,width},hoverinfo:'skip',showlegend:false};}
+  function line(a,b,color='#D3D3D3',width=2){return {type:'scatter3d',mode:'lines',x:[a[0],b[0]],y:[a[1],b[1]],z:[a[2],b[2]],line:{color,width},hoverinfo:'skip',showlegend:false};}
   function mesh(vertices,color,opacity){
     return {type:'mesh3d',x:vertices.map(p=>p[0]),y:vertices.map(p=>p[1]),z:vertices.map(p=>p[2]),
       i:[0,0],j:[1,2],k:[2,3],color,opacity,flatshading:true,hoverinfo:'skip',showlegend:false};
@@ -2382,9 +2382,10 @@ window.addEventListener('load', function () {
       hoverinfo:'text',name:'Minimum Yield',showlegend:false});
     const layout={margin:{l:0,r:0,b:0,t:0},paper_bgcolor:'#fff',showlegend:false,uirevision:'keep-camera',
       scene:{aspectmode:'manual',aspectratio:{x:1.35,y:1,z:1.05},
-      xaxis:{title:'Pricing Level (Borrower)',range:[.4,3.6],tickvals:[1,2,3],ticktext:coords.borrower,zeroline:false},
-      yaxis:{title:'Structure Risk',range:[.4,4.6],tickvals:[1,2,3,4],ticktext:coords.structure,zeroline:false},
-      zaxis:{title:'Segment Risk',range:[.4,5.6],tickvals:[1,2,3,4,5],ticktext:coords.segment,zeroline:false}}};
+  xaxis:{title:{text:'<b>Pricing Level</b>',font:{size:14,color:'#000000'}},range:[.4,3.6],tickvals:[1,2,3],ticktext:coords.borrower,zeroline:false},
+  yaxis:{title:{text:'<b>LGD / Structure Risk</b>',font:{size:14,color:'#000000'}},range:[.4,4.6],tickvals:[1,2,3,4],ticktext:coords.structure,zeroline:false},
+  zaxis:{title:{text:'<b>Segment Risk</b>',font:{size:14,color:'#000000'}},range:[.4,5.6],tickvals:[1,2,3,4,5],ticktext:coords.segment,zeroline:false}
+}};
     // Plotly uses Z as the vertical screen axis. Swap the model's Y and Z
     // coordinates for display, keeping the Segment risk vertical.
     traces.forEach(t => {const temp=t.y; t.y=t.z; t.z=temp;});
