@@ -1,0 +1,178 @@
+---
+title: "3D Risk-Pricing Matrix"
+output:
+  html_document:
+    self_contained: true
+    theme: flatly
+    toc: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(readxl)
+library(plotly)
+library(htmltools)
+library(jsonlite)
+
+file <- "Pricing Modeling Gary.xlsx"
+if (!file.exists(file)) stop("Keep Pricing Modeling Gary.xlsx in the same folder as this Rmd.")
+base <- read_excel(file, range = "D2:F4", col_names = FALSE)
+segment <- read_excel(file, range = "H8:I12", col_names = FALSE)
+borrower <- read_excel(file, range = "K9:L11", col_names = FALSE)
+structure <- read_excel(file, range = "N8:O11", col_names = FALSE)
+make_map <- function(labels, values) {
+  stats::setNames(as.list(as.numeric(values)), trimws(as.character(labels)))
+}
+model <- list(
+  base = make_map(base[[1]], as.numeric(base[[2]]) + as.numeric(base[[3]])),
+  segment = make_map(segment[[1]], segment[[2]]),
+  borrower = make_map(borrower[[1]], borrower[[2]]),
+  structure = make_map(structure[[1]], structure[[2]])
+)
+selected <- list(
+  base = as.character(read_excel(file, range = "D16", col_names = FALSE)[[1]][1]),
+  segment = as.character(read_excel(file, range = "D19", col_names = FALSE)[[1]][1]),
+  borrower = as.character(read_excel(file, range = "D20", col_names = FALSE)[[1]][1]),
+  structure = as.character(read_excel(file, range = "D21", col_names = FALSE)[[1]][1])
+)
+model_json <- jsonlite::toJSON(model, auto_unbox = TRUE, digits = 12)
+defaults_json <- jsonlite::toJSON(selected, auto_unbox = TRUE)
+```
+
+<style>
+body {font-family:system-ui,sans-serif;color:#10203d;}
+.main-container {max-width:1480px!important;}
+h1.title {font-size:32px;font-weight:750;color:#0d1c3c;margin-bottom:12px;}
+.pricing-layout {display:grid;grid-template-columns:minmax(245px,300px) minmax(0,1fr);gap:18px;align-items:start;}
+.pricing-sidebar {background:#f6f9fc;border:1px solid #d4dfeb;border-radius:10px;padding:16px;}
+.controls {display:flex;flex-direction:column;gap:14px;}
+.control {display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:14px;}
+.control select {width:100%;padding:10px;border:1px solid #b6c8da;border-radius:6px;background:#fff;color:#10203d;}
+.summary {border-top:1px solid #d4dfeb;margin-top:18px;padding-top:15px;}
+.yield {font-size:34px;font-weight:750;color:#123d64;margin-top:3px;}
+.breakdown {font-size:13px;line-height:1.9;margin-top:8px;}
+.plot-area {min-width:0;}
+.plot-area .html-widget {max-width:100%;}
+.note {font-size:13px;color:#516477;margin-top:5px;}
+@media(max-width:800px){.pricing-layout{grid-template-columns:1fr;}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:480px){.controls{grid-template-columns:1fr;}}
+</style>
+
+<div class="pricing-layout">
+<div class="pricing-sidebar">
+<div class="controls">
+<label class="control">Base <select id="base-select"></select></label>
+<label class="control">Segment <select id="segment-select"></select></label>
+<label class="control">Borrower <select id="borrower-select"></select></label>
+<label class="control">Structure <select id="structure-select"></select></label>
+</div>
+<div class="summary">
+<strong>Risk Adjusted Yield (Coupon)</strong>
+<div class="yield" id="yield-value">—</div>
+<div style="font-size:14px;color:#ad2525;font-weight:700;margin-top:9px;">Minimum Yield: <span id="minimum-value">—</span></div>
+<div class="breakdown" id="yield-breakdown"></div>
+</div>
+</div>
+<div class="plot-area">
+
+```{r plot, fig.width=10, fig.height=6.3}
+plot_ly(x = c(1, 2), y = c(1, 2), z = c(1, 2),
+        type = "scatter3d", mode = "markers",
+        marker = list(size = 1, opacity = 0), showlegend = FALSE) %>%
+  layout(margin = list(l = 0, r = 0, b = 0, t = 0))
+```
+
+<div class="note">Drag to rotate, scroll to zoom. The orange cell marks the selected combination. Green is the Risk Adjusted Yield and red is the minimum yield (0.50 percentage points below it). Both are shown next to their markers.</div>
+</div>
+</div>
+
+```{r embedded-data, results='asis'}
+cat('<script type="application/json" id="pricing-model">', model_json, '</script>\n', sep = '')
+cat('<script type="application/json" id="pricing-defaults">', defaults_json, '</script>\n', sep = '')
+```
+
+<script>
+window.addEventListener('load', function () {
+  const model = JSON.parse(document.getElementById('pricing-model').textContent);
+  const defaults = JSON.parse(document.getElementById('pricing-defaults').textContent);
+  const keys = ['base','segment','borrower','structure'];
+  const selects = {};
+  keys.forEach(k => {
+    const el = document.getElementById(k+'-select'); selects[k]=el;
+    Object.keys(model[k]).forEach(name => {
+      const opt=document.createElement('option'); opt.value=name;opt.textContent=name;el.appendChild(opt);
+    });
+    el.value=defaults[k].trim();
+    if(el.selectedIndex<0) el.selectedIndex=0;
+    el.addEventListener('change',update);
+  });
+  const gd=document.querySelector('.plot-area .js-plotly-plot');
+  if(!gd || !window.Plotly){document.getElementById('yield-value').textContent='Plot unavailable';return;}
+  const coords={segment:Object.keys(model.segment),borrower:Object.keys(model.borrower),structure:Object.keys(model.structure)};
+  const pct=n=>(100*n).toFixed(2)+'%';
+  const signed=n=>(n>=0?'+':'')+(100*n).toFixed(2)+'%';
+  function line(a,b,color='#8fa5ba',width=2){return {type:'scatter3d',mode:'lines',x:[a[0],b[0]],y:[a[1],b[1]],z:[a[2],b[2]],line:{color,width},hoverinfo:'skip',showlegend:false};}
+  function mesh(vertices,color,opacity){
+    return {type:'mesh3d',x:vertices.map(p=>p[0]),y:vertices.map(p=>p[1]),z:vertices.map(p=>p[2]),
+      i:[0,0],j:[1,2],k:[2,3],color,opacity,flatshading:true,hoverinfo:'skip',showlegend:false};
+  }
+  function plane(axis,v,color){
+    if(axis==='x')return mesh([[v,.5,.5],[v,5.5,.5],[v,5.5,4.5],[v,.5,4.5]],color,.22);
+    if(axis==='y')return mesh([[.5,v,.5],[3.5,v,.5],[3.5,v,4.5],[.5,v,4.5]],color,.22);
+    return mesh([[.5,.5,v],[3.5,.5,v],[3.5,5.5,v],[.5,5.5,v]],color,.22);
+  }
+  function cube(x,y,z){
+    const a=x-.47,b=x+.47,c=y-.47,d=y+.47,e=z-.47,f=z+.47;
+    return {type:'mesh3d',x:[a,b,b,a,a,b,b,a],y:[c,c,d,d,c,c,d,d],z:[e,e,e,e,f,f,f,f],
+      i:[0,0,0,1,1,2,3,4,4,5,6,7],j:[1,2,4,2,5,3,7,5,6,6,7,4],k:[2,3,5,5,6,7,4,6,7,2,3,0],
+      color:'#ff841e',opacity:.55,flatshading:true,hoverinfo:'skip',showlegend:false};
+  }
+  function update(){
+    const chosen=Object.fromEntries(keys.map(k=>[k,selects[k].value]));
+    const x=coords.borrower.indexOf(chosen.borrower)+1;
+    const y=coords.segment.indexOf(chosen.segment)+1;
+    const z=coords.structure.indexOf(chosen.structure)+1;
+    const yieldValue=model.base[chosen.base]+model.segment[chosen.segment]+model.borrower[chosen.borrower]+model.structure[chosen.structure];
+    const minimumYield=yieldValue-0.005; // 0.50 percentage points, e.g. 8.25% -> 7.75%
+    document.getElementById('yield-value').textContent=pct(yieldValue);
+    document.getElementById('minimum-value').textContent=pct(minimumYield);
+    document.getElementById('yield-breakdown').innerHTML=
+      'Base: '+pct(model.base[chosen.base])+'<br>Segment: '+signed(model.segment[chosen.segment])+ '<br>Borrower: '+signed(model.borrower[chosen.borrower])+'<br>Structure: '+signed(model.structure[chosen.structure]);
+    const traces=[];
+    // Three-axis wireframe: X=Borrower/Pricing Level, Y=Segment Risk, Z=Structure Risk.
+    for(let xi=.5;xi<=3.5;xi++)for(let yi of [.5,5.5])traces.push(line([xi,yi,.5],[xi,yi,4.5]));
+    for(let xi=.5;xi<=3.5;xi++)for(let zi of [.5,4.5])traces.push(line([xi,.5,zi],[xi,5.5,zi]));
+    for(let yi=.5;yi<=5.5;yi++)for(let xi of [.5,3.5])traces.push(line([xi,yi,.5],[xi,yi,4.5]));
+    for(let yi=.5;yi<=5.5;yi++)for(let zi of [.5,4.5])traces.push(line([.5,yi,zi],[3.5,yi,zi]));
+    for(let zi=.5;zi<=4.5;zi++)for(let xi of [.5,3.5])traces.push(line([xi,.5,zi],[xi,5.5,zi]));
+    for(let zi=.5;zi<=4.5;zi++)for(let yi of [.5,5.5])traces.push(line([.5,yi,zi],[3.5,yi,zi]));
+    traces.push(plane('x',x,'#eea05c'),plane('y',y,'#4b9bd1'),plane('z',z,'#62b77a'),cube(x,y,z));
+    // Both markers lie on the vertical pricing-level plane (constant X).
+    // Separate them vertically along Segment Risk for readability; this is a
+    // visual offset only, not a change in risk category or a yield axis.
+    traces.push({type:'scatter3d',mode:'markers+text',x:[x],y:[y+.16],z:[z],
+      marker:{size:8,color:'#277b32',line:{color:'#102b18',width:2}},
+      text:['Coupon: '+pct(yieldValue)],textposition:'top left',
+      textfont:{size:13,color:'#176a2a'},
+      hovertext:[chosen.segment+' / '+chosen.borrower+' / '+chosen.structure+'<br>Risk Adjusted Yield: '+pct(yieldValue)],
+      hoverinfo:'text',name:'Risk Adjusted Yield',showlegend:false});
+    traces.push({type:'scatter3d',mode:'markers+text',x:[x],y:[y-.16],z:[z],
+      marker:{size:8,color:'#d62828',line:{color:'#7f1414',width:2}},
+      text:['Minimum: '+pct(minimumYield)],textposition:'bottom right',
+      textfont:{size:13,color:'#b91c1c'},
+      hovertext:[chosen.segment+' / '+chosen.borrower+' / '+chosen.structure+'<br>Minimum Yield: '+pct(minimumYield)],
+      hoverinfo:'text',name:'Minimum Yield',showlegend:false});
+    const layout={margin:{l:0,r:0,b:0,t:0},paper_bgcolor:'#fff',showlegend:false,uirevision:'keep-camera',
+      scene:{aspectmode:'manual',aspectratio:{x:1.35,y:1,z:1.05},
+      xaxis:{title:'Pricing Level (Borrower)',range:[.4,3.6],tickvals:[1,2,3],ticktext:coords.borrower,zeroline:false},
+      yaxis:{title:'Structure Risk',range:[.4,4.6],tickvals:[1,2,3,4],ticktext:coords.structure,zeroline:false},
+      zaxis:{title:'Segment Risk',range:[.4,5.6],tickvals:[1,2,3,4,5],ticktext:coords.segment,zeroline:false}}};
+    // Plotly uses Z as the vertical screen axis. Swap the model's Y and Z
+    // coordinates for display, keeping the Segment risk vertical.
+    traces.forEach(t => {const temp=t.y; t.y=t.z; t.z=temp;});
+    layout.scene.camera={eye:{x:1.65,y:-1.75,z:1.15},up:{x:0,y:0,z:1}};
+    Plotly.react(gd,traces,layout,{responsive:true,displaylogo:false});
+  }
+  update();
+});
+</script>

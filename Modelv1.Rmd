@@ -1,0 +1,66 @@
+---
+title: "Interactive 3D Prediction Model"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(shiny)
+library(plotly)
+library(readxl)
+library(dplyr)
+
+df <- read_excel("data.xlsx")
+
+predict_output <- function(x1, x2, x3) {
+  0.5 * x1 + 0.3 * x2 + 2 * x3
+}
+```
+
+## Create user inputs
+
+```{r, echo=FALSE}
+numericInput("x1", "Variable 1:", value = 20)
+numericInput("x2", "Variable 2:", value = 30)
+numericInput("x3", "Variable 3:", value = 5)
+```
+
+### Display predicted output
+
+```{r, echo=FALSE}
+renderText({
+  req(input$x1, input$x2, input$x3)
+
+  paste("Predicted output:",
+        round(predict_output(input$x1, input$x2, input$x3), 3))
+})
+```
+
+## Create 3D interactive plot
+
+```{r, echo=FALSE}
+renderPlotly({
+  req(input$x1, input$x2, input$x3)
+
+  plot_ly(
+    df,
+    x = ~Variable1,
+    y = ~Variable2,
+    z = ~Variable3,
+    color = ~Output,
+    colors = "Viridis",
+    type = "scatter3d",
+    mode = "markers"
+  ) %>%
+    add_trace(
+      x = input$x1, y = input$x2, z = input$x3,
+      type = "scatter3d",
+      mode = "markers",
+      marker = list(size = 10, color = "orange1"),
+      name = "Selected Prediction",
+      inherit = FALSE
+    )
+})
+```
+
+
